@@ -18,10 +18,6 @@ import {
 import NumberFormat from 'react-number-format';
 
 const useStyles = makeStyles(theme => ({
-  tableContainer: {
-    width: '80vw',
-    [theme.breakpoints.down('md')]: { width: '50vw' }
-  },
   table: { borderCollapse: 'separate' },
   head: { backgroundColor: 'black', color: 'white' },
   visuallyHidden: {
@@ -43,7 +39,9 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: '#fff'
   },
   sticky1: { left: 0 },
-  sticky2: { left: 60 }
+  sticky2: { left: 60 },
+  textRed: { color: '#ea3943' },
+  textGreen: { color: '#16c784' }
 }));
 
 const descendingComparator = (a, b, orderBy) =>
@@ -86,10 +84,20 @@ function EnhancedTableHead({ order, orderBy, onRequestSort }) {
       sticky: [classes.stickyColumn, classes.sticky2].join(' ')
     },
     { id: 'current_price', numeric: true, label: 'Price' },
-    { id: 'price_change_percentage_24h', numeric: true, label: '24h %' },
-    { id: 'market_cap', numeric: true, label: 'Market Cap' },
-    { id: 'total_volume', numeric: true, label: 'Total Volume' },
-    { id: 'circulating_supply', numeric: true, label: 'Circulating Supply' }
+    {
+      id: 'price_change_percentage_24h',
+      numeric: true,
+      label: '24h %',
+      minWidth: 100
+    },
+    { id: 'market_cap', numeric: true, label: 'Market Cap', minWidth: 170 },
+    { id: 'total_volume', numeric: true, label: 'Total Volume', minWidth: 170 },
+    {
+      id: 'circulating_supply',
+      numeric: true,
+      label: 'Circulating Supply',
+      minWidth: 170
+    }
   ];
 
   return (
@@ -130,7 +138,7 @@ EnhancedTableHead.propTypes = {
   rowCount: PropTypes.number.isRequired
 };
 
-export default function CoinsTable({ coinsArr }) {
+export default function CoinsTable({ arr }) {
   const classes = useStyles(),
     [order, setOrder] = useState('asc'),
     [orderBy, setOrderBy] = useState('market_cap_rank'),
@@ -148,11 +156,11 @@ export default function CoinsTable({ coinsArr }) {
   };
 
   const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, coinsArr.length - page * rowsPerPage);
+    rowsPerPage - Math.min(rowsPerPage, arr.length - page * rowsPerPage);
 
   return (
     <>
-      <TableContainer className={classes.tableContainer}>
+      <TableContainer>
         <Table
           className={classes.table}
           aria-labelledby='tableTitle'
@@ -163,10 +171,10 @@ export default function CoinsTable({ coinsArr }) {
             order={order}
             orderBy={orderBy}
             onRequestSort={handleRequestSort}
-            rowCount={coinsArr.length}
+            rowCount={arr.length}
           />
           <TableBody>
-            {stableSort(coinsArr, getComparator(order, orderBy))
+            {stableSort(arr, getComparator(order, orderBy))
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map(
                 (
@@ -232,19 +240,24 @@ export default function CoinsTable({ coinsArr }) {
                       <TableCell align='right'>
                         <NumberFormat
                           className={classes.semiBold}
-                          value={current_price}
+                          value={Number(current_price).toFixed(2)}
                           displayType={'text'}
                           thousandSeparator={true}
                           prefix={'$'}
                         />
                       </TableCell>
                       <TableCell align='right'>
-                        <Typography
-                          variant='body2'
-                          className={classes.semiBold}
-                        >
-                          {price_change_percentage_24h}%
-                        </Typography>
+                        <NumberFormat
+                          className={[
+                            classes.semiBold,
+                            price_change_percentage_24h < 0
+                              ? classes.textRed
+                              : classes.textGreen
+                          ].join(' ')}
+                          value={Number(price_change_percentage_24h).toFixed(2)}
+                          displayType={'text'}
+                          suffix={'%'}
+                        />
                       </TableCell>
                       <TableCell align='right'>
                         <NumberFormat
@@ -267,10 +280,10 @@ export default function CoinsTable({ coinsArr }) {
                       <TableCell align='right'>
                         <NumberFormat
                           className={classes.semiBold}
-                          value={circulating_supply}
+                          value={Number(circulating_supply).toFixed(0)}
                           displayType={'text'}
                           thousandSeparator={true}
-                          prefix={'$'}
+                          suffix={` ${symbol.toUpperCase()}`}
                         />
                       </TableCell>
                     </TableRow>
@@ -288,7 +301,7 @@ export default function CoinsTable({ coinsArr }) {
       <TablePagination
         rowsPerPageOptions={[rowsPerPage]}
         component='div'
-        count={coinsArr.length}
+        count={arr.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
