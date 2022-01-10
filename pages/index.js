@@ -1,14 +1,9 @@
 import { useState } from 'react';
 import Head from 'next/head';
-import {
-  useTheme,
-  useMediaQuery,
-  makeStyles,
-  Grid,
-  TextField,
-  Chip
-} from '@material-ui/core';
+import { useTheme, useMediaQuery, Grid, TextField } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import CoinsTable from '../components/CoinsTable';
+import ScrollableTabsButtonForce from '../components/ScrollableTabsButtonForce';
 
 const useStyles = makeStyles({
   container: { margin: '2em 0' },
@@ -59,15 +54,8 @@ export default function Home({ cryptocurrencies, categories }) {
                 variant='outlined'
               />
             </Grid>
-            <Grid item style={{ alignSelf: 'flex-start' }}>
-              <Grid item container direction='row' spacing={2}>
-                <Grid item>
-                  <Chip label='Cryptocurrencies' onClick={() => {}} />
-                </Grid>
-                <Grid item>
-                  <Chip label='Categories' onClick={() => {}} />
-                </Grid>
-              </Grid>
+            <Grid item style={{ alignSelf: 'flex-start', width: '100%' }}>
+              <ScrollableTabsButtonForce />
             </Grid>
             <Grid item style={{ width: '100%' }}>
               <CoinsTable arr={cryptocurrencies} />

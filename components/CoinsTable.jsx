@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import PropTypes from 'prop-types';
 import {
-  makeStyles,
   Table,
   TableBody,
   TableCell,
@@ -12,25 +11,18 @@ import {
   TableSortLabel,
   TablePagination,
   Grid,
-  Typography
-} from '@material-ui/core';
+  Typography,
+  Box
+} from '@mui/material';
 
 import NumberFormat from 'react-number-format';
+import { makeStyles } from '@mui/styles';
+import { visuallyHidden } from '@mui/utils';
 
 const useStyles = makeStyles(theme => ({
   table: { borderCollapse: 'separate' },
   head: { backgroundColor: 'black', color: 'white' },
-  visuallyHidden: {
-    border: 0,
-    clip: 'rect(0 0 0 0)',
-    height: 1,
-    margin: -1,
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    top: 20,
-    width: 1
-  },
+
   semiBold: { fontWeight: '450' },
   stickyColumn: {
     position: 'sticky',
@@ -118,9 +110,9 @@ function EnhancedTableHead({ order, orderBy, onRequestSort }) {
             >
               {headCell.label}
               {orderBy === headCell.id ? (
-                <span className={classes.visuallyHidden}>
+                <Box component='span' sx={visuallyHidden}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </span>
+                </Box>
               ) : null}
             </TableSortLabel>
           </TableCell>
